@@ -9,7 +9,6 @@
 const http = require('http'); // http client
 const fs = require('fs'); // file system
 const crypto = require('crypto') // crypto
-const EventEmitter = require('events').EventEmitter // event emitter
 
 // useful npm modules that do one thing and one thing well (unix philosophy)
 const hyperstream = require('hyperstream') // streaming html into html
@@ -92,7 +91,7 @@ const wss = websocket.createServer({server: server}, connection);
 // track your sockets
 const sockets = [];
 
-// WebSocket + EventEmitter + Streams API for the server and the browser
+// WebSocket Stream for the server and the browser
 function connection (stream) {
 
   const sp = stream.pipe(split(JSON.parse))
