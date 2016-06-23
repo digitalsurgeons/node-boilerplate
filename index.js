@@ -12,9 +12,6 @@ const crypto = require('crypto') // crypto
 const EventEmitter = require('events').EventEmitter // event emitter
 
 // useful npm modules that do one thing and one thing well (unix philosophy)
-const emitStream = require('emit-stream') // streaming event emiiter
-const JSONStream = require('JSONStream') // streaming JSON
-const MuxDemux = require('mux-demux') // multiplex-demultiplex object streams
 const hyperstream = require('hyperstream') // streaming html into html
 const routes = require('patterns')(); // http router
 const st = require('st'); // static file server
@@ -24,9 +21,9 @@ const websocket = require('websocket-stream'); // websockets
 const level = require('level'); // database
 const cookie = require('cookie') // cookie parser
 const has = require('has') // Object.prototype.hasOwnProperty.call shortcut
-const split = require('split2')
-const through = require('through2')
-const eof = require('end-of-stream')
+const split = require('split2') // split text stream into line stream
+const through = require('through2') // transform stream
+const eof = require('end-of-stream') // callback at end of stream
 
 // server gzipped static files from the dist folder
 const serve = st({
@@ -97,55 +94,45 @@ const sockets = [];
 
 // WebSocket + EventEmitter + Streams API for the server and the browser
 function connection (stream) {
-  // MuxDemux method
-  const mx = MuxDemux(socketsRouter);
-  stream.pipe(mx).pipe(stream);
 
-  // through stream method
-  stream.pipe(split(JSON.parse)).pipe(through.obj(write))
-  sockets.push(stream);
+  const sp = stream.pipe(split(JSON.parse))
 
-  eof(stream, () => {
-    const ix = sockets.indexOf(stream)
-    if (ix > -1) sockets.splice(ix, 1)
+  const header = JSON.stringify({
+    header: 'DS Node.js Boilerplate'
   })
 
-  function write (row, enc, next) {
+  // set the html <header>
+  stream.write(header + '\n')
+
+  sp.on('error', err => {
+    console.error(err)
+  })
+
+  sp.pipe(through.obj((row, enc, next) => {
     if (!row) next();
 
-    // broadcast
-    if (row.broadcast) {
-      const msg = JSON.stringify({msg: row.broadcast});
-      sockets.forEach(socket => {
-        socket.write(msg + '\n');
-      })
-    }
+    // handle each row of JSON here
 
-    // message from the client
-    if (row.server) {
-      console.log(row.server);
+
+    // example message from the client
+    if (row.msg) {
+      console.log(row.msg);
     }
 
     // message back the client
     const clientMsg = JSON.stringify({msg: 'hello from the server!'});
     stream.write(clientMsg + '\n')
+
+    // call next row
     next()
-  }
+  }))
 
-}
+  sockets.push(stream);
+  eof(stream, () => {
+    const ix = sockets.indexOf(stream)
+    if (ix > -1) sockets.splice(ix, 1)
+  })
 
-function socketsRouter (stream) {
-  const meta = stream.meta;
-  let socket;
-  if (meta === 'server') {
-    socket = new EventEmitter();
-    emitStream(socket).pipe(stream);
-  } else if (meta ==='client') {
-    socket = emitStream(stream)
-  }
-
-  socket.emit('hello', 'DS Node.js Boilerplate')
-  socket.on('client', msg => console.log(msg));
 }
 
 
