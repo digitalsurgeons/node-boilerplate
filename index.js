@@ -27,7 +27,6 @@ const has = require('has') // Object.prototype.hasOwnProperty.call shortcut
 const split = require('split2')
 const through = require('through2')
 const eof = require('end-of-stream')
-const pump = require('pump')
 
 // server gzipped static files from the dist folder
 const serve = st({
@@ -98,22 +97,41 @@ const sockets = [];
 
 // WebSocket + EventEmitter + Streams API for the server and the browser
 function connection (stream) {
+  // MuxDemux method
   const mx = MuxDemux(socketsRouter);
-  // stream.pipe(mx).pipe(stream);
+  stream.pipe(mx).pipe(stream);
 
-  const sp = split(JSON.parse);
-  sp.on('error', () => stream.end());
-  pump(stream, sp, through.obj(write), err => {
-    if (err) console.error(err);
-  })
-  
-  pump(stream, mx, stream)
+  // through stream method
+  stream.pipe(split(JSON.parse)).pipe(through.obj(write))
   sockets.push(stream);
 
   eof(stream, () => {
     const ix = sockets.indexOf(stream)
-    if (ix > -1) streams.splice(ix, 1)
+    if (ix > -1) sockets.splice(ix, 1)
   })
+
+  function write (row, enc, next) {
+    if (!row) next();
+
+    // broadcast
+    if (row.broadcast) {
+      const msg = JSON.stringify({msg: row.broadcast});
+      sockets.forEach(socket => {
+        socket.write(msg + '\n');
+      })
+    }
+
+    // message from the client
+    if (row.server) {
+      console.log(row.server);
+    }
+
+    // message back the client
+    const clientMsg = JSON.stringify({msg: 'hello from the server!'});
+    stream.write(clientMsg + '\n')
+    next()
+  }
+
 }
 
 function socketsRouter (stream) {
@@ -130,14 +148,6 @@ function socketsRouter (stream) {
   socket.on('client', msg => console.log(msg));
 }
 
-function write (row, enc, next) {
-  if (!row) next();
-  const msg = JSON.stringify({msg: msg});
-  sockets.forEach(socket => {
-    socket.write(msg + '\n');
-  })
-  next()
-}
 
 function render (page) {
   return (req, res) => {

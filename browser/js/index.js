@@ -23,13 +23,18 @@ server.on('hello', msg => {
 
 client.emit('client', 'hello server');
 
-ws.write(JSON.stringify({
-  value: 'this is a broadcast'
-}));
 
-// emitStream(client).pipe(JSONStream.stringify()).pipe(ws)
+const broadcast = JSON.stringify({broadcast: 'this is a broadcast'});
+ws.write(broadcast + '\n');
+
+const serverMsg = JSON.stringify({server: 'hello from the client'});
+ws.write(serverMsg + '\n');
+
 
 function write (row, enc, next) {
-  console.low(row.msg)
+  if (!row) next()
+  if (row.msg) {
+    console.log('message:', row.msg)
+  }
   next()
 }
