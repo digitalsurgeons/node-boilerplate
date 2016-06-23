@@ -119,15 +119,31 @@ function connection (stream) {
       console.log(row.msg);
     }
 
-    // message back the client
-    const clientMsg = JSON.stringify({msg: 'hello from the server!'});
-    stream.write(clientMsg + '\n')
+
+    // broadcast to everyone else
+    if (row.broadcast) {
+      sockets.forEach(socket => {
+        if (socket !== stream) {
+          socket.write(JSON.stringify({msg: row.broadcast}) + '\n');
+        }
+      })
+    }
 
     // call next row
     next()
   }))
 
   sockets.push(stream);
+
+  // example message the client
+  const clientMsg = JSON.stringify({msg: 'hello from the server!'});
+  stream.write(clientMsg + '\n')
+
+  // example broadcast
+  sockets.forEach(socket => {
+    socket.write(JSON.stringify({msg: 'this is a broadcast'}) + '\n');
+  })
+
   eof(stream, () => {
     const ix = sockets.indexOf(stream)
     if (ix > -1) sockets.splice(ix, 1)

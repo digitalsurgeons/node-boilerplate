@@ -18,6 +18,10 @@ sp.pipe(through.obj(write))
 const serverMsg = JSON.stringify({msg: 'hello from the client'});
 ws.write(serverMsg + '\n');
 
+const broadcast = JSON.stringify({
+  broadcast: 'this is a broadcast from a browser'
+});
+ws.write(broadcast +'\n');
 
 function write (row, enc, next) {
   if (!row) next()
@@ -32,3 +36,4 @@ function write (row, enc, next) {
 
   next()
 }
+
