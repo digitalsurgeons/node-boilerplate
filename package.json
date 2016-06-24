@@ -54,23 +54,27 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "JSONStream": "^1.1.2",
     "body": "^5.1.0",
     "bytewise": "^1.1.0",
     "cookie": "^0.3.1",
-    "emit-stream": "^0.1.2",
     "end-of-stream": "^1.1.0",
     "has": "^1.0.1",
     "hyperstream": "^1.2.2",
     "level": "^1.4.0",
     "level-browserify": "^1.1.0",
-    "mux-demux": "^3.7.9",
     "patterns": "^1.0.2",
-    "pump": "^1.0.1",
     "split2": "^2.1.0",
     "st": "^1.1.0",
     "through2": "^2.0.1",
     "websocket-stream": "^3.2.1",
     "xhr": "^2.2.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsurgeons/ds-node-boilerplate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dsurgeons/ds-node-boilerplate/issues"
+  },
+  "homepage": "https://github.com/dsurgeons/ds-node-boilerplate#readme"
 }
