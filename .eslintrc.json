@@ -2,5 +2,6 @@
     "extends": "airbnb",
     "plugins": [
         "react"
-    ]
+    ],
+    "consistent-return": false
 }
