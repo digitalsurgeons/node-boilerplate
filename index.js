@@ -8,21 +8,21 @@
 // core Node.js modules
 const http = require('http'); // http client
 const fs = require('fs'); // file system
-const crypto = require('crypto') // crypto
+const crypto = require('crypto'); // crypto
 
 // useful npm modules that do one thing and one thing well (unix philosophy)
-const hyperstream = require('hyperstream') // streaming html into html
+const hyperstream = require('hyperstream'); // streaming html into html
 const routes = require('patterns')(); // http router
 const st = require('st'); // static file server
-const body = require('body/any') // form body parser
-const oppressor = require('oppressor') // gzip
+const body = require('body/any'); // form body parser
+const oppressor = require('oppressor'); // gzip
 const websocket = require('websocket-stream'); // websockets
 const level = require('level'); // database
-const cookie = require('cookie') // cookie parser
-const has = require('has') // Object.prototype.hasOwnProperty.call shortcut
-const split = require('split2') // split text stream into line stream
-const through = require('through2') // transform stream
-const eof = require('end-of-stream') // callback at end of stream
+const cookie = require('cookie'); // cookie parser
+const has = require('has'); // Object.prototype.hasOwnProperty.call shortcut
+const split = require('split2'); // split text stream into line stream
+const through = require('through2'); // transform stream
+const eof = require('end-of-stream'); // callback at end of stream
 
 // server gzipped static files from the dist folder
 const serve = st({
@@ -38,16 +38,16 @@ const db = level('db', {
 });
 
 // set up a sessions
-const sessions = {}
+const sessions = {};
 
 // routing
 routes.add('GET /', render('login'));
 routes.add('POST /login', (req, res, params) => {
   body(req, res, (err, form) => {
     if (err) {
-      console.error(err)
-      res.statusCode = 404
-      res.end(err + '\n')
+      console.error(err);
+      res.statusCode = 404;
+      res.end(err + '\n');
     }
 
     // set a session cookie
@@ -60,8 +60,8 @@ routes.add('POST /login', (req, res, params) => {
       'Location': '/'
     });
     res.end();
-  })
-})
+  });
+});
 
 // http server
 // if the request method and url is a defined route then call it's function
@@ -71,7 +71,7 @@ const server = http.createServer((req, res) => {
 
   if (!match) {
     serve(req, res);
-    return true;
+    return;
   }
 
   const fn = match.value;
@@ -94,18 +94,18 @@ const sockets = [];
 // WebSocket Stream for the server and the browser
 function connection (stream) {
 
-  const sp = stream.pipe(split(JSON.parse))
+  const sp = stream.pipe(split(JSON.parse));
 
   const header = JSON.stringify({
     header: 'DS Node.js Boilerplate'
-  })
+  });
 
   // set the html <header>
-  stream.write(header + '\n')
+  stream.write(header + '\n');
 
   sp.on('error', err => {
-    console.error(err)
-  })
+    console.error(err);
+  });
 
   sp.pipe(through.obj((row, enc, next) => {
     if (!row) next();
@@ -125,28 +125,28 @@ function connection (stream) {
         if (socket !== stream) {
           socket.write(JSON.stringify({msg: row.broadcast}) + '\n');
         }
-      })
+	  });
     }
 
     // call next row
-    next()
-  }))
+    next();
+  }));
 
   sockets.push(stream);
 
   // example message the client
   const clientMsg = JSON.stringify({msg: 'hello from the server!'});
-  stream.write(clientMsg + '\n')
+  stream.write(clientMsg + '\n');
 
   // example broadcast
   sockets.forEach(socket => {
     socket.write(JSON.stringify({msg: 'this is a broadcast'}) + '\n');
-  })
+  });
 
   eof(stream, () => {
-    const ix = sockets.indexOf(stream)
-    if (ix > -1) sockets.splice(ix, 1)
-  })
+    const ix = sockets.indexOf(stream);
+    if (ix > -1) sockets.splice(ix, 1);
+  });
 
 }
 
@@ -171,15 +171,15 @@ function render (page) {
     const indexHTML = fs.createReadStream('browser/index.html');
     const updateUsername = hyperstream({
         '.username': sessions[cookies.session]
-    })
+    });
     const selectors = isSession ?
       chat :
-      pageHTML
+      pageHTML;
 
     indexHTML
       .pipe(hyperstream(selectors))
       .pipe(updateUsername)
       .pipe(oppressor(req))
       .pipe(res);
-  }
+  };
 }
