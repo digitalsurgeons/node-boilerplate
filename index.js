@@ -60,7 +60,7 @@ routes.add('POST /login', (req, res, params) => {
       'Location': '/'
     });
 
-	res.end();
+    res.end();
 
   });
 });
@@ -73,8 +73,8 @@ const server = http.createServer((req, res) => {
 
   if (match) {
     const fn = match.value;
-	req.params = match.params;
-	fn(req, res);
+    req.params = match.params;
+    fn(req, res);
   }
   else serve(req, res);
 
@@ -125,7 +125,7 @@ function connection (stream) {
         if (socket !== stream) {
           socket.write(JSON.stringify({msg: row.broadcast}) + '\n');
         }
-	  });
+      });
     }
 
     // call next row
@@ -179,6 +179,6 @@ function render (page) {
       .pipe(hyperstream(selectors))
       .pipe(updateUsername)
       .pipe(oppressor(req))
-	  .pipe(res);
+      .pipe(res);
   };
 }
