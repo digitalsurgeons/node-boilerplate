@@ -59,7 +59,9 @@ routes.add('POST /login', (req, res, params) => {
     res.writeHead(302, {
       'Location': '/'
     });
-    res.end();
+
+	res.end();
+
   });
 });
 
@@ -69,15 +71,13 @@ routes.add('POST /login', (req, res, params) => {
 const server = http.createServer((req, res) => {
   const match = routes.match(`${req.method} ${req.url}`);
 
-  if (!match) {
-    serve(req, res);
-    return;
+  if (match) {
+    const fn = match.value;
+	req.params = match.params;
+	fn(req, res);
   }
+  else serve(req, res);
 
-  const fn = match.value;
-  req.params = match.params;
-
-  fn(req, res);
 });
 
 // listen for http request on port 9090
@@ -160,7 +160,6 @@ function render (page) {
     const isSession = cookies.session && has(sessions, cookies.session);
 
     const chat = {
-      '.username': sessions[cookies.session], // this needs to go in chat
       '.page': fs.createReadStream('browser/pages/chat.html')
     };
 
@@ -180,6 +179,6 @@ function render (page) {
       .pipe(hyperstream(selectors))
       .pipe(updateUsername)
       .pipe(oppressor(req))
-      .pipe(res);
+	  .pipe(res);
   };
 }
