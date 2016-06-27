@@ -165,14 +165,13 @@ function render (page) {
     const isSession = cookies.session && has(sessions, cookies.session);
 
     if (isSession) {
-      const chat = trumpet()
+      const chat = trumpet();
+      chat.pipe(pageStream);
 
-      chat.pipe(pageStream)
-      const username = chat.select('.username').createWriteStream()
-      username.end(sessions[cookies.session])
+      const username = chat.select('.username').createWriteStream();
+      username.end(sessions[cookies.session]);
 
-      fs.createReadStream('browser/pages/chat.html')
-        .pipe(chat);
+      fs.createReadStream('browser/pages/chat.html').pipe(chat);
 
     } else {
       fs.createReadStream(`browser/pages/${page}.html`).pipe(pageStream);
