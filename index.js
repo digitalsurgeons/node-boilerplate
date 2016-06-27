@@ -40,6 +40,21 @@ const db = level('db', {
   keyEncoding: require('bytewise')
 });
 
+const catopts = [
+  {
+    key: 'cats!gizmo',
+    value: ['outdoors', 'hunting mice']
+  },
+  {
+    key: 'cats!pepper',
+    value: ['indoors', 'cuddling with hoomans']
+  }
+]
+
+db.batch(catopts, err => {
+  if (err) console.error(err)
+})
+
 // set up a sessions
 const sessions = {};
 
@@ -53,9 +68,16 @@ routes.add('POST /login', (req, res, params) => {
       res.end(err + '\n');
     }
 
-    // set a session cookie
+    // create a session cookie
     const sid = crypto.randomBytes(64).toString('hex');
     sessions[sid] = form.username;
+
+    // put the user in the db
+    db.put(`users!${sid}`, form.username, err => {
+      if (err) console.error(err)
+    })
+
+    // set the session cookie
     res.setHeader('set-cookie', `session=${sid}`);
 
     // redirect home
@@ -119,12 +141,32 @@ function connection (stream) {
       console.log(row.msg);
     }
 
+    // if the user sent their cookie
+    if (row.cookie) {
+      // get their name from the db
+      db.get(`users!${row.cookie}`, (err, user) => {
+        if (err) console.error(err);
 
-    // broadcast to everyone else
-    if (row.broadcast) {
-      sockets.forEach(socket => {
-        if (socket !== stream) so(socket, row.broadcast);
+        // if they are broadcasting
+        if (row.broadcast) {
+          sockets.forEach(socket => {
+            if (socket !== stream) {
+              so(socket, `${user} > ${row.broadcast}`);
+            }
+          });
+        }
+      })
+    }
+
+    if (row.read === 'cats') {
+      const cats = db.createReadStream({
+        gt: 'cats!',
+        lt: 'cats!~'
       });
+
+      cats.on('data', data => {
+        so(stream, data)
+      })
     }
 
     // call next row
