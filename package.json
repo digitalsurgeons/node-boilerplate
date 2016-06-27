@@ -58,7 +58,6 @@
     "cookie": "^0.3.1",
     "end-of-stream": "^1.1.0",
     "has": "^1.0.1",
-    "hyperstream": "^1.2.2",
     "level": "^1.4.0",
     "level-browserify": "^1.1.0",
     "oppressor": "0.0.1",
