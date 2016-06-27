@@ -11,7 +11,7 @@ const fs = require('fs'); // file system
 const crypto = require('crypto'); // crypto
 
 // useful npm modules that do one thing and one thing well (unix philosophy)
-const hyperstream = require('hyperstream'); // streaming html into html
+const trumpet = require('trumpet'); // streaming html into html
 const routes = require('patterns')(); // http router
 const st = require('st'); // static file server
 const body = require('body/any'); // form body parser
@@ -155,30 +155,29 @@ function render (page) {
   return (req, res) => {
     res.setHeader('content-type', 'text/html');
 
+    const tr = trumpet();
+    tr.pipe(oppressor(req)).pipe(res);
+
+    const pageStream = tr.select('.page').createWriteStream();
+
     // check if the user is "logged in"
     const cookies = cookie.parse(req.headers.cookie || '');
     const isSession = cookies.session && has(sessions, cookies.session);
 
-    const chat = {
-      '.page': fs.createReadStream('browser/pages/chat.html')
-    };
+    if (isSession) {
+      const chat = trumpet()
 
-    const pageHTML = {
-      '.page': fs.createReadStream(`browser/pages/${page}.html`)
-    };
+      chat.pipe(pageStream)
+      const username = chat.select('.username').createWriteStream()
+      username.end(sessions[cookies.session])
 
-    const indexHTML = fs.createReadStream('browser/index.html');
-    const updateUsername = hyperstream({
-        '.username': sessions[cookies.session]
-    });
-    const selectors = isSession ?
-      chat :
-      pageHTML;
+      fs.createReadStream('browser/pages/chat.html')
+        .pipe(chat);
 
-    indexHTML
-      .pipe(hyperstream(selectors))
-      .pipe(updateUsername)
-      .pipe(oppressor(req))
-      .pipe(res);
+    } else {
+      fs.createReadStream(`browser/pages/${page}.html`).pipe(pageStream);
+    }
+
+    fs.createReadStream('browser/index.html').pipe(tr);
   };
 }
