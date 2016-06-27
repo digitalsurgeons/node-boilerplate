@@ -2,12 +2,11 @@ const through = require('through2')
 const split = require('split2')
 const websocket = require('websocket-stream');
 
+const scoot = require('../../lib/scoot.js');
+const so = scoot('msg')
+
 const ws = websocket('ws://localhost:9090');
 const sp = ws.pipe(split(JSON.parse))
-
-const ui = {
-  header: document.querySelector('header')
-}
 
 sp.on('error', err => {
   console.error(err)
@@ -15,13 +14,15 @@ sp.on('error', err => {
 
 sp.pipe(through.obj(write))
 
-const serverMsg = JSON.stringify({msg: 'hello from the client'});
-ws.write(serverMsg + '\n');
+const ui = {
+  header: document.querySelector('header')
+}
 
-const broadcast = JSON.stringify({
+so(ws, 'hello from the client');
+
+so(ws, {
   broadcast: 'this is a broadcast from a browser'
 });
-ws.write(broadcast +'\n');
 
 function write (row, enc, next) {
   if (!row) next()

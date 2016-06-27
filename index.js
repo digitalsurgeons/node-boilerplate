@@ -24,6 +24,9 @@ const split = require('split2'); // split text stream into line stream
 const through = require('through2'); // transform stream
 const eof = require('end-of-stream'); // callback at end of stream
 
+const scoot = require('./lib/scoot') // s.write(JSON.stringify(x) +'/n') shortcut
+const so = scoot('msg')
+
 // server gzipped static files from the dist folder
 const serve = st({
   path: 'browser/dist',
@@ -96,12 +99,10 @@ function connection (stream) {
 
   const sp = stream.pipe(split(JSON.parse));
 
-  const header = JSON.stringify({
+  // set the html <header>
+  so(stream, {
     header: 'DS Node.js Boilerplate'
   });
-
-  // set the html <header>
-  stream.write(header + '\n');
 
   sp.on('error', err => {
     console.error(err);
@@ -122,9 +123,7 @@ function connection (stream) {
     // broadcast to everyone else
     if (row.broadcast) {
       sockets.forEach(socket => {
-        if (socket !== stream) {
-          socket.write(JSON.stringify({msg: row.broadcast}) + '\n');
-        }
+        if (socket !== stream) so(socket, row.broadcast);
       });
     }
 
@@ -135,13 +134,10 @@ function connection (stream) {
   sockets.push(stream);
 
   // example message the client
-  const clientMsg = JSON.stringify({msg: 'hello from the server!'});
-  stream.write(clientMsg + '\n');
+  so(stream, 'hello from the server!');
 
   // example broadcast
-  sockets.forEach(socket => {
-    socket.write(JSON.stringify({msg: 'this is a broadcast'}) + '\n');
-  });
+  sockets.forEach(socket => so(socket, 'this is a broadcast'));
 
   eof(stream, () => {
     const ix = sockets.indexOf(stream);
