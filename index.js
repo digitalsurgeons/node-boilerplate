@@ -25,7 +25,7 @@ const through = require('through2'); // transform stream
 const eof = require('end-of-stream'); // callback at end of stream
 
 const scoot = require('./lib/scoot') // s.write(JSON.stringify(x) +'/n') shortcut
-const so = scoot('msg')
+const so = scoot('msg') // if you can think of a cooler name lemme know
 
 // server gzipped static files from the dist folder
 const serve = st({
@@ -149,11 +149,14 @@ function connection (stream) {
 
 function render (page) {
   return (req, res) => {
+    // set content type
     res.setHeader('content-type', 'text/html');
 
+    // create html stream, gzip, then pipe to response
     const tr = trumpet();
     tr.pipe(oppressor(req)).pipe(res);
 
+    // create a write stream to the .page selector
     const pageStream = tr.select('.page').createWriteStream();
 
     // check if the user is "logged in"
@@ -161,18 +164,23 @@ function render (page) {
     const isSession = cookies.session && has(sessions, cookies.session);
 
     if (isSession) {
+      // pipe a read stream to the page selector
       const chat = trumpet();
       chat.pipe(pageStream);
 
+      // update the usernmae
       const username = chat.select('.username').createWriteStream();
       username.end(sessions[cookies.session]);
 
+      // pipe the chat html to the stream that pipes to .page
       fs.createReadStream('browser/pages/chat.html').pipe(chat);
 
     } else {
+      // pipe the rendered html to stream that pipes to .page
       fs.createReadStream(`browser/pages/${page}.html`).pipe(pageStream);
     }
 
+    // pipe the root html to the html stream
     fs.createReadStream('browser/index.html').pipe(tr);
   };
 }
