@@ -2,8 +2,7 @@ const through = require('through2')
 const split = require('split2')
 const websocket = require('websocket-stream');
 const level = require('level');
-
-const scoot = require('../../lib/scoot.js');
+const scoot = require('scoot-stream');
 
 const db = level({
   valueEncoding: 'json',

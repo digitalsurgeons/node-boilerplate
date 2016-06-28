@@ -1,4 +1,4 @@
-const scoot = require('../lib/scoot');
+const scoot = require('scoot-stream');
 const test = require('tape');
 const through = require('through2');
 const split = require('split2');

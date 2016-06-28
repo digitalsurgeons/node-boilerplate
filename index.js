@@ -23,9 +23,9 @@ const has = require('has'); // Object.prototype.hasOwnProperty.call shortcut
 const split = require('split2'); // split text stream into line stream
 const through = require('through2'); // transform stream
 const eof = require('end-of-stream'); // callback at end of stream
+const scoot = require('scoot-stream') // s.write(JSON.stringify(x) +'/n') shortcut
 
-const scoot = require('./lib/scoot') // s.write(JSON.stringify(x) +'/n') shortcut
-const so = scoot('msg') // if you can think of a cooler name lemme know
+const so = scoot('msg') // I wrote scoot-stream.
 
 // server gzipped static files from the dist folder
 const serve = st({
