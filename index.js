@@ -29,7 +29,7 @@ const so = scoot('msg') // if you can think of a cooler name lemme know
 
 // server gzipped static files from the dist folder
 const serve = st({
-  path: 'browser/dist',
+  path: 'browser/dist/',
   cache: false // edit or delete this line for production
 });
 
