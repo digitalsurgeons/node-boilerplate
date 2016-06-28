@@ -13,8 +13,30 @@ npm run dev
 
 open http://localhost:9090
 
+## What is in DS Node.js Boilerplate?
 
-### npm scripts
+### Static files
+
+[st](https://www.npmjs.com/package/st) to server static files.  It comes with gzipping and cache configuration.
+
+### Routing
+
+[patterns](https://www.npmjs.com/package/patterns) to handle our routes.
+
+### Database
+
+[level](https://www.npmjs.com/package/level) is an embedded key/value store with stream support.
+
+### websockets
+
+[websocket-stream](https://www.npmjs.com/package/websocket-stream) a streaming wrapper around the light-weight ws module.
+
+### templating
+
+[trumpet](https://www.npmjs.com/package/trumpet) streams html into html.
+
+
+## npm scripts
 
 ---
 
