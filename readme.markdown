@@ -38,66 +38,24 @@ open http://localhost:9090
 
 ## npm scripts
 
----
+browserify and uglify: `npm run build`
 
-```
-npm run build
-```
 
-browserify and uglify
+watichify: `npm run watch`
 
----
 
-```
-npm run watch
-```
+start the server: `npm start`
 
-watichify
 
----
+start the server with watchify: `npm run dev`
 
-```
-npm start
-```
 
-starts the server
+start the server / make a browserify + uglify build: `npm run production`
 
----
 
-```
-npm run dev
-```
+run test: `npm t` or `npm run test`
 
-starts the server with watchify on.
 
----
+run eslint: `npm run lint`
 
-```
-npm run production
-```
-
-starts the server and makes a browserify + uglify build.
-
----
-
-```
-npm t or npm run test
-```
-
-runs test on everything in /test
-
----
-
-```
-npm run lint
-```
-
-runs a eslint on everything.
-
----
-
-```
-npm run baitAndSwitch
-```
-
-😎 let's just say we'll need to update lint and test real quick.
+😎 (check package.json) `npm run baitAndSwitch`
