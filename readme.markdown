@@ -80,7 +80,7 @@ run eslint: `npm run lint`
 
 - [browserify handbook](https://github.com/substack/browserify-handbook)
 - [browserify adventure](https://github.com/substack/browserify-adventure)
-- [browserify for webpack users](https://github.com/substack/browserify-handbook)
+- [browserify for webpack users](https://gist.github.com/substack/68f8d502be42d5cd4942)
 
 ### leveldb
 
