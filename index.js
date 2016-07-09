@@ -23,9 +23,9 @@ const has = require('has'); // Object.prototype.hasOwnProperty.call shortcut
 const split = require('split2'); // split text stream into line stream
 const through = require('through2'); // transform stream
 const eof = require('end-of-stream'); // callback at end of stream
-const scoot = require('scoot-stream') // s.write(JSON.stringify(x) +'/n') shortcut
+const scoot = require('scoot-stream'); // s.write(JSON.stringify(x) +'/n') shortcut
 
-const so = scoot('msg') // I wrote scoot-stream.
+const so = scoot('msg'); // I wrote scoot-stream.
 
 // server gzipped static files from the dist folder
 const serve = st({
@@ -49,11 +49,11 @@ const catopts = [
     key: 'cats!pepper',
     value: ['indoors', 'cuddling with hoomans']
   }
-]
+];
 
 db.batch(catopts, err => {
-  if (err) console.error(err)
-})
+  if (err) console.error(err);
+});
 
 // set up a sessions
 const sessions = {};
@@ -74,8 +74,8 @@ routes.add('POST /login', (req, res, params) => {
 
     // put the user in the db
     db.put(`users!${sid}`, form.username, err => {
-      if (err) console.error(err)
-    })
+      if (err) console.error(err);
+    });
 
     // set the session cookie
     res.setHeader('set-cookie', `session=${sid}`);
@@ -155,7 +155,7 @@ function connection (stream) {
             }
           });
         }
-      })
+      });
     }
 
     if (row.read === 'cats') {
@@ -165,8 +165,8 @@ function connection (stream) {
       });
 
       cats.on('data', data => {
-        so(stream, data)
-      })
+        so(stream, data);
+      });
     }
 
     // call next row
