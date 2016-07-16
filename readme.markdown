@@ -64,7 +64,7 @@ run eslint: `npm run lint`
 
 ### streams
 
-> "Streams are like Arrays, but laid out in time, rather than in memory.""
+> "Streams are like Arrays, but laid out in time, rather than in memory."
 
 - [stream handbook](https://github.com/substack/stream-handbook)
 - [streams primer (video)](https://www.youtube.com/watch?v=yOSNQZm3Trw)
@@ -75,6 +75,8 @@ run eslint: `npm run lint`
 - [flow control](https://gist.github.com/dominictarr/2401787#use-flow-control-over-control-flow)
 - [history of streams](http://dominictarr.com/post/145135293917/history-of-streams)
 - [pull streams](https://medium.com/@yoshuawuyts/streams-in-node-ab9f13e15d5#.3kpzaqq0h)
+- [knowledge](https://github.com/yoshuawuyts/knowledge/blob/master/js/streams.md)
+- [cyberwizardinstitue](https://github.com/cyberwizardinstitute/workshops/blob/master/streams.markdown)
 
 ### browserify
 
