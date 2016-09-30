@@ -9,6 +9,7 @@
 const http = require('http'); // http client
 const fs = require('fs'); // file system
 const crypto = require('crypto'); // crypto
+const url = require('url') // url parser
 
 // useful npm modules that do one thing and one thing well (unix philosophy)
 const trumpet = require('trumpet'); // streaming html into html
@@ -94,7 +95,8 @@ routes.add('POST /login', (req, res, params) => {
 // if the request method and url is a defined route then call it's function
 // else serve a static file from the dist folder, or 404
 const server = http.createServer((req, res) => {
-  const match = routes.match(`${req.method} ${req.url}`);
+  const path = url.parse(req.url).pathname
+  const match = routes.match(`${req.method} ${path}`);
 
   if (match) {
     const fn = match.value;
